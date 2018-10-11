@@ -1,0 +1,208 @@
+Example 1
+
+[[1, 2], [3, 4]].each do |arr|
+  puts arr.first
+end
+# 1
+# 3
+# => [[1, 2], [3, 4]]
+
+Line      Action                Object              Side Effect           Return Value          Is Return Value Used?
+
+3         method call(each)     The outer array     None                  The Calling Object    No, but displayed in line 8
+
+3-5       block execution       Each sub array       No                   nil                   No
+
+4         method call (first)   Each sub array       No                   Element 0 of sub      Used by (puts) 
+                                                                          array
+
+4         method call (puts)    Each sub array       Output string        nil                   used to determine return
+                                                     representation of                          value of block
+                                                     the integer
+
+
+Example 2
+
+[[1, 2], [3, 4]].map do |arr|
+  puts arr.first
+end
+# 1
+# 3
+# => [nil, nil]
+
+Line      Action                Object              Side Effect           Return Value          Is Return Value Used?
+
+26        method call (map)     The outer array     None                  new array             no, but displayed on line 31
+
+26 - 28   block execution       each sub array      None                  nil                   yes, used by map for transformation
+
+27        method call (first)   each sub array      None                  index 0 of sub array  used by (puts)
+
+27        method call (puts)    each sub array      display string        nil                   yes, used to determine return value
+                                                    representation of                           of the block
+                                                    the integer value of
+                                                    sub array
+
+
+
+Example 3
+
+[[1, 2], [3, 4]].map do |arr|
+  puts arr.first
+  arr.first
+end
+
+Line      Action                Object              Side Effect           Return Value          Is Return Value Used?
+
+50        method call (map)     outer array         None                  new array             no
+
+50 - 53   block execution       sub arrays          None                  yes                   used by new array
+
+51        method call (first)   sub arrays          None                  index 0 of sub array  used by puts to display
+  
+51        method call (puts)    sub arrays          display string        nil                   no
+                                                    representaiton of
+                                                    index 0 of sub arrays
+
+52        method call (frist)   sub arrays          None                  index 0 of sub arrays used to determine the return
+                                                                                                value of the block
+
+
+Example 4
+
+my_arr = [[18, 7], [3, 12]].each do |arr|
+  arr.each do |num|
+    if num > 5
+      puts num
+    end
+  end
+end
+
+Line      Action                Object              Side Effect           Return Value          Is Return Value Used?
+
+73        variable                                  None                  [[18, 7], [3, 12]]    no
+          assignment
+
+73        method call (each)    [[18, 7], [3, 12]]  None                  [[18, 7], [3, 12]]    yes, used by variable assignment (arr)
+
+73 - 79   outer block execution sub array           None                  each sub array        no
+
+74        method call (each)    each sub array      None                  sub array in current  yes, used to determine return value
+                                                                          iteration             of outer block
+
+74 - 78   inner block execution each element of     None                  nil                   no
+                                sub array in that
+                                iteration
+
+75        comparison (>)        each element of     None                  boolean              Yes, evaluated by (if)
+                                sub array in that
+                                iteration   
+
+75        conditional (if)      each element of     None                  nil                  Yes, use to determine the return value
+                                sub array in that                                              of inner block
+                                iteration                           
+
+76        method call (puts)    each element of    displayed string       nil                  Yes, use to determine the return value
+                                sub array in that  representation of                           of inner block 
+                                iteration          element
+Example 5
+
+What is the type of action being performed (method call, block, conditional, etc..)?
+What is the object that action is being performed on?
+What is the side-effect of that action (e.g. output or destructive action)?
+What is the return value of that action?
+Is the return value used by whatever instigated the action?
+
+[[1, 2], [3, 4]].map do |arr|
+  arr.map do |num|
+    num * 2
+  end
+end
+
+Original 
+
+Line        Action                  Object              Side Effect           Return Value          Is Return Value Used?
+
+116         method call (map)       [[1, 2], [3, 4]]    nil                   transformed array      no
+
+116 - 120   outer block execution   each sub array      nil                   transformed array     Yes, used by top-level map for
+                                                                                                    transformation
+117         method call (map)       each sub array in   nil                   transformed array     Yes, used to determine outer
+                                    iteration                                                       block's return value
+
+117 - 120   inner block execution   each element within nil                   integer               yes, used by map for transformation
+                                    the sub array
+
+118         operator * on (num)                         nil                   integer               yes, used to determine the value of
+                                                                                                    inner block
+
+Question 6
+
+What is the type of action being performed (method call, block, conditional, etc..)?
+What is the object that action is being performed on?
+What is the side-effect of that action (e.g. output or destructive action)?
+What is the return value of that action?
+Is the return value used by whatever instigated the action?
+
+[{ a: 'ant', b: 'elephant' }, { c: 'cat' }].select do |hash|
+  hash.all? do |key, value|
+    value[0] == key.to_s
+  end
+end
+
+# => [{ :c => "cat" }]
+
+[{ a: 'ant', b: 'elephant' }, { c: 'cat' }].select do |hash|
+  hash.all? do |key, value|
+    value[0] == key.to_s
+  end
+end
+
+Line        Action                  Object              Side Effect           Return Value          Is Return Value Used?
+
+155         method call (select)    original array      none                  new array             no
+
+155 - 160   outer block execution   each sub array      none                  new array             yes, used by select to
+                                                                                                    form new array
+
+156         method call (all)       each element of     none                  boolean               yes, used by inner block to  
+                                    sub array                                                       run the conditional if true
+
+156 - 158   inner block execution   each element of     none                  key, vaue             yes, used by conditional to 
+                                    sub array                                 pair                  run comparison
+                                    
+157         conditional             key, value pair in  none                  boolean               yes, used by select method to form
+                                    current iteration                                               new array, if true
+
+Question 7
+
+What is the type of action being performed (method call, block, conditional, etc..)?
+What is the object that action is being performed on?
+What is the side-effect of that action (e.g. output or destructive action)?
+What is the return value of that action?
+Is the return value used by whatever instigated the action?
+
+arr = [['1', '8', '11'], ['2', '6', '13'], ['2', '12', '15'], ['1', '8', '9']]
+
+arr.sort_by do |sub_arr|
+  sub_arr.map do |num|
+    num.to_i
+  end
+end
+
+Line        Action                  Object              Side Effect           Return Value          Is Return Value Used?
+
+187         method call (sort_by)   arr variable        none                  transformed array     no
+
+187 - 191   block execution         each sub array      none                  transformed array     used by sort_by for transformation
+
+188         method call (map)       each element        none                  transformed array     used to determine outer block return
+                                    in iteration                                                    value
+
+188 - 190   block execution         each element        none                  string value of       used by map to transform array
+                                    in iteration                              element               
+
+189         method call (to_i)      string value of    none                   integer value of      used by determine the value of
+                                    Element                                   Element               inner block
+
+

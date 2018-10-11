@@ -1,0 +1,16 @@
+selection and transformation are common actions performed on a collection
+
+Selection - is picking a certain element out of the collection based on certain criteria. Selecting all the even numbers out of array
+
+Transformation - is manipulating every element of the collection. Incrementing all the element of array by 1
+
+selection will result in returning all or less element in collectoin, transformation will always return all the elements of the collection
+
+selection and transformation require some criteria based on which selection will determine which elements to select and transformation will need that criteria to determine how to perform transformation on all the elements of the collection. they both use looping to perform the action
+
+when transforming the collection it is important to understand if the original collection is mutated or a new transformed collection is returned.
+
+[1,2,3].each_with_object([]) do |num, array|
+  array << num * 3 
+end
+

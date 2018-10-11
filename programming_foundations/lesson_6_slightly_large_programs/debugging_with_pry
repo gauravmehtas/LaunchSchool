@@ -1,0 +1,31 @@
+Bugs are errors made my humans while coding, debugging is the process of identifying and fixing those erros.
+
+Process of debugging code
+
+1. identifying / locate the problem => what is causing the problem, method invocation, variable assignment, variable scope. checking stack trace
+
+2. understand the problem => what is causing the problem
+
+3. Implementing a solution
+
+TYPES OF ERROS
+
+SYNTAX ERRORS - the code does not conform to the grammer of the programming language, stops code for functioning
+
+LOGICAL ERROS - erros in the logic of the code, which creates unexpected results. code will run but result is not right. These are harder to debug.
+
+Pry IS REPL  => READ-EVALUATE-PRINT LOOP 
+
+  TAKES USER INPUT
+  EVALUATE THE INPUT
+  RETURN RESULT TO THE USER
+  LOOPS BACK TO START 
+
+Pry vs irb
+
+pry has color coding syntax
+more options to work with
+implement methods directly to the object
+
+
+

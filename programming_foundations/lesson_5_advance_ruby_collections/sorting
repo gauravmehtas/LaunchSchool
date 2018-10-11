@@ -1,0 +1,62 @@
+Sorting
+
+sorting is carried out by comparing items in a collection with each other and ordering them based on the results that comparison.
+
+the sorting is done by <=> method. this method performs comparison between two objects and returns -1, 0, 1 for for first object if
+it is less than, equal or greater than the second object. if two objects cannot be compared then nil is returned.
+
+2<=>1 => 1
+1<=>2 => -1
+
+one the comparison is done with <=> method, the return value of this method is used by sort to to dermine where to place the items.
+if the method returns nil then sort will throw an error
+
+['a', 1].sort => error
+
+comparison method is easy to understand with integers, but for the string comparison, the order is determined by character position in
+ASCII table. ASCII chart order determins the outcome of the comparison method <=> for strings
+
+'A' <=> 'a' => -1
+
+we can call #ord method on a character to know it's order in ASCII table.
+
+Uppercase letters come before lowercase letters
+digits and most punctuations comes before letters
+
+we can call sort method directly on the collection and it will return a new array of ordered items. when we do this the comparison is
+carried out using <=>
+
+we can also call sort method with a block which gives us more control over the sorting 
+
+[2,3,4,5].sort do |a, b|
+  b<=>a # for descending sort
+end
+
+sort_by method
+
+sort_by method is used with a block and the code inside the block dectates how the comparison is made. 
+
+['cot', 'bed', 'mat'].sort_by do |word|
+  word[1]
+end
+
+the above example applies the comparison <=> method on the 1st index of above strings in the iteration and sort with 'o', 'e' and 'a'. rest all
+the characters are ignored.
+
+sort_by method can also be used to sort a hash if required. 
+
+people = { Kate: 27, john: 25, Mike:  18 }
+
+people.sort_by do |key, val|
+  val
+end
+
+this will sort the hash according the values of the hash. sort_by method returns a new array. in a case of hash sorting it will return a nested array of sorted key, value elements. hash can be converted back to hash by using #to_h method
+
+if hash is compared with :symbols, comparison method applied #to_s on symbols first and then compare them. 
+
+tip=> when comparing symbols we can apply #capitalize method to have all the strings compared in capitalize mode
+
+
+
+

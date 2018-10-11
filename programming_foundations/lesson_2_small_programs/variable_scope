@@ -1,0 +1,47 @@
+Variable Scope determines where in the program a variable is available to use. 
+
+Variable scope is defined by wehre the variable is initialized.
+
+Inner scope of a block can access the variables initialized in the outer scope but not vice versa.
+
+For loop does not create an inner scope because for is a part of ruby language and not a method.
+
+Types of Variables
+
+Constants - Do not change them. Assign them for something which will always be same. Constants cannot be declared in method defination.
+
+CONSTANTS = 'I am available throughout the program'
+
+Global Variables - declared by starting the variable name with $ sign. available throughout the program. STAY AWAY from them
+
+$var = 'I am also available throughout the program'
+
+Class Variables - they are declared by starting the variable name with @@ . accessible by instances of your class and class itself. should be 
+initialized at the class level and outside of any method defination. can be altered.
+
+@@class_variable = 0
+
+Instance Variables - initialized with @ before variable name. variable is available throughout the current instance of parent class.
+
+@instance = 0
+
+Local Variables - declared with any sign pre pending them. 
+
+var = "I am normal variable with all the restrictions. You should use me most."
+
+Variable Scope -
+
+block after method invocation creates inner scope of variables created inside the block. these variables cannot be accessed outside the block.
+
+variable shadowing - when block parameter is same as the variable outside the block. in this case the access to the outer scope variable is restricted. avoid variable shadowing to avoid confusion.
+
+variables & method definitions - method definition cannot access local variables in another scope. the only variables method has access to, must be
+passed into methods as parameters.
+
+blocks & method definitions - even if the block is inside the method definition, the scoping rules of block remains as is.
+
+method definition - when you define a method by using def keyword
+
+method invocation - when you call the method 
+
+Given this additional context, we can think of method definition as setting a certain scope for any local variables in terms of the parameters that the method definition has, what it does with those parameters, and also how it interacts (if at all) with a block. We can then think of method invocation as using the scope set by the method definition. If the method is defined to use a block, then the scope of the block can provide additional flexibility in terms of how the method invocation interacts with its surroundings.

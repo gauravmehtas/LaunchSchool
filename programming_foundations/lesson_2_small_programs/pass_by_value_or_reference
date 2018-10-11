@@ -1,0 +1,124 @@
+pass by value - object passed in method as a copy of original object
+
+pass by reference - object passed in method as reference to the original object
+
+when we perform some action to the argument that mutates the caller, we can permanently alter the variables outside the method definition scope.
+
+an object is a bit of data with some state, often called as value and an associated behaviour. it can be a boolean, string, integer or a database connection.
+
+objects can be assigned to variables, which accociates them to the variable. In ruby we will say that variable will reference to the object. Variable will have an object id whcih refer to the object in memory.
+
+two variables can refer to the same object. this can be determined with object id of the variable. if its the same with both variables, this means that both variables are pointing towards the same object in memory and any change to the object will be reflected by all the variables referencing towards the same object.
+
+reassignment - if we reassign on of the variables pointing towards the same object that other variables are; for example 
+
+a = 'hello'
+
+b = a
+
+a = 'bye'
+
+now b = 'hello' and a = 'bye'
+
+both variables are now pointing towards diffrence objects in memory
+
+Mutability - Objects can either be mutable or immutable, like in ruby strings are mutable, numbers and boolean values are immutable, they cannot be changed but numbers can be reassigned.
+
+a = 1
+
+a = a + 2
+
+now a will be 3, this is reassignment. This does not change the object but binds the variable to a new object. any immutable object can not be altered. you can only reassign the varible to a new object via reassignment.  
+
+Mutable Objects - other than boolean, numbers and few others everything in ruby is mutable. these objects can be changed in there state and object id stays the same. my collection method mutate the original object.
+
+Object Passing - to understand whether a method can modify its argument depends on, weather the object passed into method as argument is mutable or immutable in nature and also on how the argument is passed into the method.
+
+some languages make a copy of the object as argument and pass it into the method. this way the original object is never changed. this is called pass by value 
+
+some languages pass the reference to the original object into the method. this way the original object can be modified depending if the object itself in mutable or not. this is called pass by reference
+
+many languages employ both stratergies. one strategy is used by default and other is used only in case of special syntax, keyword etc. 
+
+FOR RUBY, SINCE THE IMMUTABLE OBJECTS CAN NOT BE MODIFIED THEY ARE PASSED AROUND IN RUBY AS PASS BY VALUE
+
+MUTABLE OBJECTS CAN BE MODIFIED BY SIMPLY CALLING THE MUTATING METHODS. THEY ACT LIKE RUBY PASSES THEM BY REFERENCE
+
+non-mutating method - all methods are non mutating with respect to immutable objects as arguments, so any method which works on number or boolean as argument will be non mutating. methods are called non mutating if they do not mutate the argument. 
+
+All the mutating methods does not create a new object but changes the current one. like 
+
+a = 'hello'
+
+b = def change(value)
+  value.upcase!
+end
+
+change(a)
+
+now, in this reference of a is passed into the argument variable value. now both point towards string object 'hello'. upcase! is a mutating method which does not create a new sting object but changes the current one. so now both variables b and a refer to string object 'HELLO'
+
+indexed assignment - to the collection element or string is mutating through the method. though it does not change the object assignment as a whole.
+
+a = [1,2,3]
+
+a[1] = 5
+
+this is mutating and now array will be [1,5,3], but the object id of the array won't be changed. this will not create a new array.
+
+
+concatnation is mutating - += is non mutating and creates a new object but << is mutating and changes the original object
+
+setters are mutating - setter are very similar to indexed assignment. 
+
+METHODS - 
+
+method should only do one thing only 
+
+  return a meaningful value  example - total
+
+  def total(x, y)
+    x + y
+  end
+
+  print out something which means returns nil - print_total
+
+  def print_total(x, y)
+    puts x + y
+  end
+
+  permanent mutation of argument - total!
+
+
+  def total!(arr, x)
+    arr << x
+  end
+
+  methods should be named appropriately. do not write methods which mutates, output and return a meaningful value at the same time. it will be hard to degub or understand the method later. 
+
+  DO NOT MUTATE A COLLECTION DURING ITERATION
+
+  we can change the elements of the collection while iterating but not the collection object itself. this means that if we are deleting or adding the elements while iterating through the collection, it will produce weird results.
+
+  word = %w(how are you doing today)
+
+  word.each { |str| word.delete(str) }
+
+  => ["are", "doing"]
+
+  now all of the elements should have been deleted but this is not the case. we should not mutate the collection object while iterating through it, we can however mutate the individual elements inside the iteration.
+
+  word = %w(how are you doing today)
+
+  word.map { |str| str+'s' }
+
+ => ["hows", "ares", "yous", "doings", "todays"] 
+
+VARIABLE SHADOWING for block will prevent access to outside variable. 
+
+selecting the same variable as outer scope variable in a  block can lead to mutating the outer scope variable by accident as it is accessible in the inner scope of the block. slect variable name carefully so you accidently do not mutate an outer scope variable.
+
+DO not use assignment in conditional. always you comparison operators. if assignment operator = is used in conditional then your condition will always return true.
+
+USE UNDERSCORE FOR UNUSED PARAMETERS if you don't want to used the parameter. words.each_with_index { |_, idx| puts idx }
+

@@ -1,0 +1,9 @@
+# mortgage_message.yml
+welcome: "=>Welcome to mortgage calculator!"
+loan_amount: "=>Enter total loan amount?"
+validate: "=>The amount entered is not a valid amount. Enter only positive numbers without any ',' or other special character."
+apr: "=>Enter the Annual Percentage Rate (Interest Rate Per Annum)"
+loan_duration: "=> Enter Loan Duration in Years"
+again: "=>Do you like to run another calculation (Enter Y for yes else press any key to exit)"
+exit: "=>Thanks for using the mortgage calculator. Have a nice day!"
+validate_duration: "=>The loan duration is not a valid. Please enter duration only in years."

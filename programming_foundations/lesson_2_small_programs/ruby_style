@@ -1,0 +1,34 @@
+# file naming - snake case
+
+snake_case.rb
+
+#assigning a  variable
+
+my_age = 16
+
+# defining method
+
+def this_is_a_method
+  # something happens here
+end
+
+# CONSTANT VARIABLE - value that does should not change
+# and is available throughtout the program
+
+FOUR = '3'
+
+# sinle line code block
+
+[1,2,3,4].each { |num| puts num }
+
+# multiline code block
+
+[1,2,3,4].each do |num|
+  puts num
+end
+
+# class naming - it is done in CamelCase
+
+class MyFirstClass
+
+end

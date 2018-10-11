@@ -1,0 +1,146 @@
+Question 3
+
+[[1, 2], [3, 4]].map do |arr|
+  puts arr.first
+  arr.first
+end
+
+Line            Action              Object              Side Effect                 Return Value                  Is Return Value Used?
+
+3          method call (map)      outer array           none                      new transformed array [1,3]          no
+
+3 - 6      block execution        each sub array        string representation     0 index of each sub array       used by map to return
+                                                        of sub arrays 0 index                                     transformed array
+
+4         method call (first)     each sub array        none                      0 index of each sub array       used by puts method
+
+4         method call (puts)      0 index of sub array  string representation     nil                             no
+                                                        of sub array 0 index
+
+5         method call (first)     each sub array        none                      0 index of each sub array       yes used by block      
+
+Question 4
+
+my_arr = [[18, 7], [3, 12]].each do |arr|
+  arr.each do |num|
+    if num > 5
+      puts num
+    end
+  end
+end
+
+Line            Action              Object              Side Effect                 Return Value                  Is Return Value Used?
+
+24           variable assignment    array                 none                      original array                    no
+
+24           method call (each)     outer array           none                      the calling Object            yes, used by variable my_arr
+
+24 - 30      block execution        sub array             none                      sub array                         no
+
+25           method call (each)     element of sub array  none                      the calling Object            yes, used by outer block
+
+25 - 29      block execution        element of sub array  none                      nil                               no
+
+26           comparison             element of sub array  none                      boolean                      yes, evaluated by if
+
+26           conditional            element of sub array  none                      nil                          yes, use to determine
+                                                                                                                return value of inner block
+
+
+27          method call (puts)      element of sub array  none                      nil                         yes, use to determine return
+                                                                                                                value of inner block
+
+Question 5
+
+[[1, 2], [3, 4]].map do |arr|
+  arr.map do |num|
+    num * 2
+  end
+end
+
+Line            Action              Object              Side Effect                 Return Value                  Is Return Value Used?
+
+55          method call (map)     outer array             none                      transformed array                 no
+                                                                                    [[2, 4], [6, 8]]
+
+55 - 59     block execution       sub arrays              none                      transformed sub               yes used by method (map) 
+                                                                                    arrays                       to return transformed array
+
+56          method call (map)     sub array               none                      transformed sub array         yes used by outer block
+
+56 - 58     block execution       each element of         none                      integer                       yes used by method (map)
+                                  sub array                                                                       to return transformed array
+
+57          num * 2               none                    none                      integer                       yes, used as return value of
+                                                                                                                  inner block
+
+Question 6
+
+[{ a: 'ant', b: 'blephant' }, { c: 'cat' }].select do |hash|
+  hash.all? do |key, value|
+    value[0] == key.to_s
+  end
+end
+
+
+
+Line            Action              Object              Side Effect                 Return Value                  Is Return Value Used?
+
+79          method call (select)    outer array         none                        new array with, element                 no
+                                                                                    returns true for the
+                                                                                    select condition
+
+79 - 83     block execution outer   nested hashes       none                        nested hash which             yes, used by select method
+                                    in array                                        returns true for the         
+                                                                                    select condition
+
+80          method call (all?)      nested hash key     none                        boolean                       yes, used by outer block to
+                                    value pairs                                                                   return a hash if true 
+
+80 - 82     block execution inner   key value pair      none                        boolean                       yes used by method (all?), if
+                                                                                                                  elements of collection returned
+                                                                                                                  true
+
+81          comparison (==)         key & first element   none                      boolean                       yes used by block if comparison
+                                    of value                                                                      is true.
+
+Question 7
+
+in order to sort the elements inside the arrays first and then sort the sub arrays.
+
+arre = [['1', '8', '11'], ['2', '6', '13'], ['2', '12', '15'], ['1', '10', '7']]
+
+
+def inner_sort(arr)
+arr.map do |new_arr|
+  new_arr.sort_by do |num|
+    num.to_i
+  end
+end
+
+end
+
+def outer_sort(arr)
+arr.sort_by do |sub_arr|
+  sub_arr.map do |num| 
+    num.to_i
+  end
+end
+end
+
+Question 10
+
+[[[1, 2], [3, 4]], [5, 6]].map do |inner1|
+  if inner1.flatten.size == 2
+    inner1.map do |num|
+      num += 1
+    end
+  else
+    inner1.map do |inner2|
+      inner2.map do |inner3|
+        inner3 += 1
+      end
+    end
+  end
+end
+
