@@ -1,6 +1,7 @@
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
+NUMBER = 5
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]]
@@ -9,20 +10,25 @@ def prompt(msg)
   puts "=> #{msg}"
 end
 
+def display_welcome
+  prompt("Welcome to Tic Tac Toe! Win 5 rounds to be a Grand Winner.")
+  prompt("Ready To Play.. Hit Enter")
+  gets
+end
+
 def display_board(brd)
   system 'clear'
   puts <<-MSG
-                TIC TAC TOE => 3X3
 
-                  1    |2    |3
+                       |     |
                     #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}
                        |     |
                   -----------------
-                  4    |5    |6
+                       |     |
                     #{brd[4]}  |  #{brd[5]}  |  #{brd[6]}
                        |     |
                   -----------------
-                  7    |8    |9
+                       |     |
                     #{brd[7]}  |  #{brd[8]}  |  #{brd[9]}
                        |     |
   MSG
@@ -59,35 +65,23 @@ def player_places_piece!(brd)
 end
 
 def computer_defence_move(brd)
-  defence = []
   WINNING_LINES.each do |arr|
     if brd.values_at(arr[0], arr[1], arr[2]).count(PLAYER_MARKER) == 2 &&
        brd.values_at(arr[0], arr[1], arr[2]).count(INITIAL_MARKER) == 1
-      sub_hsh = {
-        arr[0] => brd.values_at(arr[0]),
-        arr[1] => brd.values_at(arr[1]),
-        arr[2] => brd.values_at(arr[2])
-      }
-      sub_hsh.each { |k, v| defence.push(k) if v == [" "] }
+      return arr.select { |square| brd[square] == INITIAL_MARKER }
     end
   end
-  defence
+  []
 end
 
 def computer_offence_move(brd)
-  offence = []
   WINNING_LINES.each do |arr|
     if brd.values_at(arr[0], arr[1], arr[2]).count(COMPUTER_MARKER) == 2 &&
        brd.values_at(arr[0], arr[1], arr[2]).count(INITIAL_MARKER) == 1
-      sub_hsh = {
-        arr[0] => brd.values_at(arr[0]),
-        arr[1] => brd.values_at(arr[1]),
-        arr[2] => brd.values_at(arr[2])
-      }
-      sub_hsh.each { |k, v| offence.push(k) if v == [" "] }
+      return arr.select { |square| brd[square] == INITIAL_MARKER }
     end
   end
-  offence
+  []
 end
 
 def computer_places_piece!(brd)
@@ -97,8 +91,8 @@ def computer_places_piece!(brd)
     brd[offensive[0]] = COMPUTER_MARKER
   elsif !defensive.empty?
     brd[defensive[0]] = COMPUTER_MARKER
-  elsif brd[5] == INITIAL_MARKER
-    brd[5] = COMPUTER_MARKER
+  elsif brd[NUMBER] == INITIAL_MARKER
+    brd[NUMBER] = COMPUTER_MARKER
   else
     square = empty_squares(brd).sample
     brd[square] = COMPUTER_MARKER
@@ -106,29 +100,25 @@ def computer_places_piece!(brd)
 end
 
 def who_play_first
-  first_player_arr = []
-  prompt "Do you wish to go first? (Type 'y' for Yes)"
+  prompt "Type 'X' go first or press Enter for Computer?"
   first_player = gets.chomp
 
-  if first_player.downcase == 'y'
-    first_player_arr = [PLAYER_MARKER, COMPUTER_MARKER]
+  if first_player.downcase == 'x'
+    [PLAYER_MARKER, COMPUTER_MARKER]
+  elsif first_player == ''
+    [COMPUTER_MARKER, PLAYER_MARKER]
   else
-    first_player_arr = [COMPUTER_MARKER, PLAYER_MARKER]
+    prompt "Not a valid option."
+    who_play_first
   end
-  first_player_arr
 end
 
-def current_player(brd, play_first, counter)
-  if counter.even? && play_first[0] == 'O'
+def current_player_plays_piece!(brd, play_first, counter)
+  if (counter.even? && play_first[0] == 'O') ||
+     (counter.odd? && play_first[1] == 'O')
     computer_places_piece!(brd)
-  elsif counter.odd? && play_first[1] == 'X'
+  else
     player_places_piece!(brd)
-  end
-
-  if counter.even? && play_first[0] == 'X'
-    player_places_piece!(brd)
-  elsif counter.odd? && play_first[1] == 'O'
-    computer_places_piece!(brd)
   end
 end
 
@@ -151,8 +141,22 @@ def detect_winner(brd)
   nil
 end
 
+def play_again
+  again = ''
+  loop do
+    prompt "Play again? (y on n)"
+    again = gets.chomp
+    if 'yYnN'.include?(again) && again != ''
+      break
+    else
+      prompt "This is not a valid option"
+    end
+  end
+  again.downcase
+end
+
 loop do
-  prompt "Welcome to Tic Tac Toe"
+  display_welcome
   player_score = 0
   computer_score = 0
   draw = 0
@@ -161,7 +165,7 @@ loop do
   winner = ''
   play_first = who_play_first
 
-  until player_score == 5 || computer_score == 5
+  until player_score == NUMBER || computer_score == NUMBER
     counter = 0
     loop do
       display_board(board)
@@ -169,7 +173,7 @@ loop do
       prompt "Round: #{round} | Player Score: #{player_score} |" \
       " Computer Score: #{computer_score} | Draw: #{draw}"
 
-      current_player(board, play_first, counter)
+      current_player_plays_piece!(board, play_first, counter)
       sleep(1)
       break if someone_won?(board) || board_full?(board)
       counter += 1
@@ -199,10 +203,8 @@ loop do
   |Grand Winner: #{winner.upcase}!!               |
   -----------------------------------------
   MSG
-
-  prompt "Play again? (y or n)"
-  answer = gets.chomp
-  break unless answer.downcase == 'y'
+  break if play_again != 'y'
+  system 'clear'
 end
 
 prompt "Thanks for playing. Good Bye!"
