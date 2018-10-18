@@ -40,15 +40,15 @@ end
 def calculate_total(current_player)
   user_total = 0
   current_player.each do |card|
-    if ['Jack', 'Queen', 'King'].include?(card[0])
-      user_total += 10
-    elsif card[0] == 'Ace' && user_total < 11
-      user_total += 11
-    elsif card[0] == 'Ace' && user_total >= 11
-      user_total += 1
-    else
-      user_total += card[0]
-    end
+    user_total += if ['Jack', 'Queen', 'King'].include?(card[0])
+                    10
+                  elsif card[0] == 'Ace' && user_total < 11
+                    11
+                  elsif card[0] == 'Ace' && user_total >= 11
+                    1
+                  else
+                    card[0]
+                  end
   end
   user_total
 end
