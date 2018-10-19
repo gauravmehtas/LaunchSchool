@@ -20,50 +20,75 @@ def display_welcome_message
   puts
 end
 
-def draw_card!(drawn_cards, current_player)
-  new_card = [CARDS.sample, TYPE.sample]
-  if drawn_cards.length > 1 && drawn_cards.include?(new_card)
-    draw_card!(drawn_cards, current_player)
-  else
-    drawn_cards << new_card
-    current_player << drawn_cards.last
-    calculate_total(current_player)
+deck = []
+counter = 0
+4.times do
+  CARDS.each do |x|
+    deck << [x, TYPE[counter]]
   end
+  counter += 1
 end
 
-def initial_draw(drawn_cards, current_player)
+deck.shuffle!
+
+def draw_card!(current_player, deck)
+  current_player << deck.pop
+  calculate_total_with_ace(current_player)
+end
+
+def initial_draw(current_player, deck)
   2.times do
-    draw_card!(drawn_cards, current_player)
+    draw_card!(current_player, deck)
   end
 end
 
 def calculate_total(current_player)
-  user_total = 0
-  current_player.each do |card|
-    user_total += if ['Jack', 'Queen', 'King'].include?(card[0])
-                    10
-                  elsif card[0] == 'Ace' && user_total < 11
-                    11
-                  elsif card[0] == 'Ace' && user_total >= 11
-                    1
-                  else
-                    card[0]
-                  end
+  arr = [0]
+  current_player.select do |x|
+    if x[0].to_i == x[0]
+      arr << x[0]
+    elsif ['Jack', 'Queen', 'King'].include?(x[0])
+      arr << 10
+    end
   end
-  user_total
+  arr
+end
+
+def number_of_aces(current_player)
+  arr1 = []
+  current_player.select do |x|
+    if x[0] == 'Ace'
+      arr1 << 'Ace'
+    end
+  end
+  arr1
+end
+
+def calculate_total_with_ace(current_player)
+  arr = calculate_total(current_player)
+  arr1 = number_of_aces(current_player)
+
+  if arr1.size > 1
+    arr << arr1.size
+  elsif arr1.size == 1 && arr.reduce(:+) >= 11
+    arr << 1
+  elsif arr1.size == 1 && arr.reduce(:+) < 11
+    arr << 11
+  end
+  arr.reduce(:+)
 end
 
 def display_total(player_cards, dealer_cards)
-  prompt "Player Total: #{calculate_total(player_cards)}"
-  prompt "Dealer Total: #{calculate_total(dealer_cards)}"
+  prompt "Player Total: #{calculate_total_with_ace(player_cards)}"
+  prompt "Dealer Total: #{calculate_total_with_ace(dealer_cards)}"
 end
 
 def player_total(player_cards)
-  calculate_total(player_cards)
+  calculate_total_with_ace(player_cards)
 end
 
 def dealer_total(dealer_cards)
-  calculate_total(dealer_cards)
+  calculate_total_with_ace(dealer_cards)
 end
 
 def player_win(player_total, dealer_total)
@@ -90,46 +115,48 @@ def compare_results(player_cards, dealer_cards)
 end
 
 def busted(current_player)
-  calculate_total(current_player) > 21
+  calculate_total_with_ace(current_player) > 21
 end
 
-def activate_dealer_hit(drawn_cards, dealer_cards, player_cards)
-  if calculate_total(dealer_cards) < 17 ||
-     calculate_total(dealer_cards) < calculate_total(player_cards)
+def activate_dealer_hit(dealer_cards, player_cards, deck)
+  if calculate_total_with_ace(dealer_cards) < 17 ||
+     calculate_total_with_ace(dealer_cards) <
+     calculate_total_with_ace(player_cards)
     prompt 'Dealer Chooses: Hit'
-    draw_card!(drawn_cards, dealer_cards)
-    prompt "Dealer's Card: #{drawn_cards.last[0]} of #{drawn_cards.last[1]}"
-    activate_dealer_hit(drawn_cards, dealer_cards, player_cards)
+    draw_card!(dealer_cards, deck)
+    prompt "Dealer's Card: #{dealer_cards.last[0]} of #{dealer_cards.last[1]}"
+    activate_dealer_hit(dealer_cards, player_cards, deck)
   end
 end
 
-def dealer_hit_stay?(drawn_cards, dealer_cards, player_cards)
+def dealer_hit_stay?(dealer_cards, player_cards, deck)
   # p dealer_cards
-  activate_dealer_hit(drawn_cards, dealer_cards, player_cards)
+  activate_dealer_hit(dealer_cards, player_cards, deck)
   if busted(dealer_cards)
     compare_results(player_cards, dealer_cards)
-  elsif calculate_total(dealer_cards) >= 17 &&
-        calculate_total(dealer_cards) >= calculate_total(player_cards)
+  elsif calculate_total_with_ace(dealer_cards) >= 17 &&
+        calculate_total_with_ace(dealer_cards) >=
+        calculate_total_with_ace(player_cards)
     prompt "Dealer Chooses: Stay"
     compare_results(player_cards, dealer_cards)
   end
 end
 
-def activate_player_hit(drawn_cards, player_cards)
-  draw_card!(drawn_cards, player_cards)
-  prompt "Player's Card: #{drawn_cards.last[0]} of \
-#{drawn_cards.last[1]}"
+def activate_player_hit(player_cards, deck)
+  draw_card!(player_cards, deck)
+  prompt "Player's Card: #{player_cards.last[0]} of \
+#{player_cards.last[1]}"
 end
 
-def player_hit_stay?(drawn_cards, player_cards, dealer_cards)
+def player_hit_stay?(player_cards, dealer_cards, deck)
   answer = ''
   loop do
     answer = hit_or_stay_answer
-    if answer == 'stay'
+    if answer.start_with?('s')
       prompt "Player Choose Stay! Dealer's Trun"
       break
-    elsif answer == 'hit' && !busted(player_cards)
-      activate_player_hit(drawn_cards, player_cards)
+    elsif answer.start_with?('h') && !busted(player_cards)
+      activate_player_hit(player_cards, deck)
       if busted(player_cards)
         compare_results(player_cards, dealer_cards)
         break
@@ -142,9 +169,9 @@ end
 def hit_or_stay_answer
   answer = ''
   loop do
-    prompt "Player Choose: Hit or Stay?"
+    prompt "Player Choose: (h) for Hit or (s) Stay?"
     answer = gets.chomp.downcase
-    break if ['hit', 'stay'].include?(answer)
+    break if ['hit', 'stay', 'h', 's'].include?(answer)
     prompt "Not a valid choice"
   end
   answer
@@ -169,18 +196,17 @@ end
 display_welcome_message
 
 loop do
-  drawn_cards = []
   player_cards = []
   dealer_cards = []
-  initial_draw(drawn_cards, player_cards)
-  initial_draw(drawn_cards, dealer_cards)
+  initial_draw(player_cards, deck)
+  initial_draw(dealer_cards, deck)
   prompt "PLAYER CARDS: #{player_cards[0][0]} of #{player_cards[0][1]}\
  & #{player_cards[1][0]} of #{player_cards[1][1]}"
   prompt "DEALER CARDS: #{dealer_cards[0][0]} of #{dealer_cards[0][1]}\
  & Unknown Card"
   puts
-  if player_hit_stay?(drawn_cards, player_cards, dealer_cards) == 'stay'
-    dealer_hit_stay?(drawn_cards, dealer_cards, player_cards)
+  if player_hit_stay?(player_cards, dealer_cards, deck).start_with?('s')
+    dealer_hit_stay?(dealer_cards, player_cards, deck)
   end
   break if play_again? == 'n'
   system 'clear'
