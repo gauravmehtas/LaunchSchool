@@ -20,20 +20,9 @@ def display_welcome_message
   puts
 end
 
-deck = []
-counter = 0
-4.times do
-  CARDS.each do |x|
-    deck << [x, TYPE[counter]]
-  end
-  counter += 1
-end
-
-deck.shuffle!
-
 def draw_card!(current_player, deck)
   current_player << deck.pop
-  calculate_total_with_ace(current_player)
+  adjust_ace_value(current_player)
 end
 
 def initial_draw(current_player, deck)
@@ -43,52 +32,40 @@ def initial_draw(current_player, deck)
 end
 
 def calculate_total(current_player)
-  arr = [0]
-  current_player.select do |x|
-    if x[0].to_i == x[0]
-      arr << x[0]
-    elsif ['Jack', 'Queen', 'King'].include?(x[0])
-      arr << 10
-    end
+  user_total = 0
+  current_player.each do |card|
+    user_total += if ['Jack', 'Queen', 'King'].include?(card[0])
+                    10
+                  elsif card[0] == 'Ace'
+                    11
+                  else
+                    card[0]
+                  end
   end
-  arr
+  user_total
 end
 
-def number_of_aces(current_player)
-  arr1 = []
-  current_player.select do |x|
-    if x[0] == 'Ace'
-      arr1 << 'Ace'
-    end
+def adjust_ace_value(current_player)
+  has_ace = current_player.select { |x| x[0] if x[0] == 'Ace' }
+  score = calculate_total(current_player)
+  if !has_ace.empty?
+    score - 10
+  else
+    score
   end
-  arr1
-end
-
-def calculate_total_with_ace(current_player)
-  arr = calculate_total(current_player)
-  arr1 = number_of_aces(current_player)
-
-  if arr1.size > 1
-    arr << arr1.size
-  elsif arr1.size == 1 && arr.reduce(:+) >= 11
-    arr << 1
-  elsif arr1.size == 1 && arr.reduce(:+) < 11
-    arr << 11
-  end
-  arr.reduce(:+)
 end
 
 def display_total(player_cards, dealer_cards)
-  prompt "Player Total: #{calculate_total_with_ace(player_cards)}"
-  prompt "Dealer Total: #{calculate_total_with_ace(dealer_cards)}"
+  prompt "Player Total: #{adjust_ace_value(player_cards)}"
+  prompt "Dealer Total: #{adjust_ace_value(dealer_cards)}"
 end
 
 def player_total(player_cards)
-  calculate_total_with_ace(player_cards)
+  adjust_ace_value(player_cards)
 end
 
 def dealer_total(dealer_cards)
-  calculate_total_with_ace(dealer_cards)
+  adjust_ace_value(dealer_cards)
 end
 
 def player_win(player_total, dealer_total)
@@ -115,13 +92,13 @@ def compare_results(player_cards, dealer_cards)
 end
 
 def busted(current_player)
-  calculate_total_with_ace(current_player) > 21
+  adjust_ace_value(current_player) > 21
 end
 
 def activate_dealer_hit(dealer_cards, player_cards, deck)
-  if calculate_total_with_ace(dealer_cards) < 17 ||
-     calculate_total_with_ace(dealer_cards) <
-     calculate_total_with_ace(player_cards)
+  if adjust_ace_value(dealer_cards) < 17 ||
+     adjust_ace_value(dealer_cards) <
+     adjust_ace_value(player_cards)
     prompt 'Dealer Chooses: Hit'
     draw_card!(dealer_cards, deck)
     prompt "Dealer's Card: #{dealer_cards.last[0]} of #{dealer_cards.last[1]}"
@@ -134,9 +111,9 @@ def dealer_hit_stay?(dealer_cards, player_cards, deck)
   activate_dealer_hit(dealer_cards, player_cards, deck)
   if busted(dealer_cards)
     compare_results(player_cards, dealer_cards)
-  elsif calculate_total_with_ace(dealer_cards) >= 17 &&
-        calculate_total_with_ace(dealer_cards) >=
-        calculate_total_with_ace(player_cards)
+  elsif adjust_ace_value(dealer_cards) >= 17 &&
+        adjust_ace_value(dealer_cards) >=
+        adjust_ace_value(player_cards)
     prompt "Dealer Chooses: Stay"
     compare_results(player_cards, dealer_cards)
   end
@@ -194,6 +171,17 @@ def play_again_answer?(user_input)
 end
 
 display_welcome_message
+
+deck = []
+counter = 0
+4.times do
+  CARDS.each do |x|
+    deck << [x, TYPE[counter]]
+  end
+  counter += 1
+end
+
+deck.shuffle!
 
 loop do
   player_cards = []
