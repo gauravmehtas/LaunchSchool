@@ -48,8 +48,9 @@ end
 def adjust_ace_value(current_player)
   has_ace = current_player.select { |x| x[0] if x[0] == 'Ace' }
   score = calculate_total(current_player)
-  if !has_ace.empty?
-    score - 10
+
+  if !has_ace.empty? && score > 21
+    score - (10 * has_ace.size)
   else
     score
   end
@@ -170,20 +171,22 @@ def play_again_answer?(user_input)
   ['y', 'n'].include?(user_input)
 end
 
-display_welcome_message
-
-deck = []
-counter = 0
-4.times do
-  CARDS.each do |x|
-    deck << [x, TYPE[counter]]
+def card_deck
+  deck = []
+  counter = 0
+  4.times do
+    CARDS.each do |x|
+      deck << [x, TYPE[counter]]
+    end
+    counter += 1
   end
-  counter += 1
+  deck.shuffle!
 end
 
-deck.shuffle!
+display_welcome_message
 
 loop do
+  deck = card_deck
   player_cards = []
   dealer_cards = []
   initial_draw(player_cards, deck)
